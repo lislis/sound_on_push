@@ -1,43 +1,64 @@
 use rppal::gpio::Gpio;
+use rppal::gpio::Level;
 use rppal::system::DeviceInfo;
 
-use std::io::BufReader;
-use std::sync::atomic::{AtomicU32, Ordering};
-use std::sync::Arc;
+use std::env;
 use std::error::Error;
 use std::thread;
 use std::time::Duration;
 
-use rodio;
+use kira::{
+	AudioManager, AudioManagerSettings, DefaultBackend,
+	sound::static_sound::StaticSoundData,
+};
+
 
 // Gpio uses BCM pin numbering. BCM GPIO 23 is tied to physical pin 16.
 const GPIO_LED: u8 = 23;
+const GPIO_BUTTON: u8 = 12;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let args: Vec<String> = env::args().collect();
+    //dbg!(&args);
 
-    println!("Blinking an LED on a {}.", DeviceInfo::new()?.model());
+    let filepath = &args[1];
 
-    let mut pin = Gpio::new()?.get(GPIO_LED)?.into_output();
+    //println!("Blinking an LED on a {}.", DeviceInfo::new()?.model());
 
-    // Blink the LED by setting the pin's logic level high for 500 ms.
-    pin.set_high();
+    let mut pin_led = Gpio::new()?.get(GPIO_LED)?.into_output();
+    let mut pin_button = Gpio::new()?.get(GPIO_BUTTON)?.into_input_pullup();
+
+    pin_led.set_low();
     thread::sleep(Duration::from_millis(500));
-    //pin.set_low();
+    pin_led.set_high();
+    thread::sleep(Duration::from_millis(500));
+    pin_led.set_low();
+    thread::sleep(Duration::from_millis(500));
+    pin_led.set_high();
 
-    let stream_handle = rodio::OutputStreamBuilder::open_default_stream()?;
-    let mixer = stream_handle.mixer();
+    let mut manager = AudioManager::<DefaultBackend>::new(AudioManagerSettings::default())?;
+    let sound_data = StaticSoundData::from_file(&filepath)?.volume(-4.0);
+    let duration = sound_data.duration();
 
-    let sound = {
-      let file = std::fs::File::open("/home/raspi/test-loop.wav")?;	
-      let buf = BufReader::new(file);
-      println!("{:?}", buf.total_duration);
-      let sink = rodio::play(&mixer, buf)?;
-      sink.set_volume(0.2);
-      sink
-    };
- 
-    println!("SOUND playing");
-//    println!("{:?}", sound.total_duration.expect("nope buffer"));	
+    // default is High because input_pullup
+    let mut current_button_state = Level::High;
+    println!("ready to go");
+
+
+    loop {
+      current_button_state = pin_button.read();
+
+      if current_button_state == Level::Low {
+         println!("playing");
+
+ 	  pin_led.set_low();
+          manager.play(sound_data.clone())?;
+	  thread::sleep(duration);
+          pin_led.set_high();
+
+         println!("done playing");
+      }
+    }
 
     Ok(())
 }

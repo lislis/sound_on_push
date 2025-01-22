@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rodio = { git = "https://github.com/RustAudio/rodio.git", branch = "master" }
+kira = { version = "0.10.2", features = ["wav", "mp3"] }
 rppal = "0.22.1"
