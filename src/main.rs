@@ -1,6 +1,7 @@
+#![allow(unreachable_code)]
+
 use rppal::gpio::Gpio;
 use rppal::gpio::Level;
-use rppal::system::DeviceInfo;
 
 use std::env;
 use std::error::Error;
@@ -12,29 +13,17 @@ use kira::{
 	sound::static_sound::StaticSoundData,
 };
 
-
 // Gpio uses BCM pin numbering. BCM GPIO 23 is tied to physical pin 16.
 const GPIO_LED: u8 = 23;
 const GPIO_BUTTON: u8 = 12;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
-    //dbg!(&args);
 
     let filepath = &args[1];
 
-    //println!("Blinking an LED on a {}.", DeviceInfo::new()?.model());
-
     let mut pin_led = Gpio::new()?.get(GPIO_LED)?.into_output();
-    let mut pin_button = Gpio::new()?.get(GPIO_BUTTON)?.into_input_pullup();
-
-    pin_led.set_low();
-    thread::sleep(Duration::from_millis(500));
-    pin_led.set_high();
-    thread::sleep(Duration::from_millis(500));
-    pin_led.set_low();
-    thread::sleep(Duration::from_millis(500));
-    pin_led.set_high();
+    let pin_button = Gpio::new()?.get(GPIO_BUTTON)?.into_input_pullup();
 
     let mut manager = AudioManager::<DefaultBackend>::new(AudioManagerSettings::default())?;
     let sound_data = StaticSoundData::from_file(&filepath)?.volume(-4.0);
@@ -42,6 +31,15 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // default is High because input_pullup
     let mut current_button_state = Level::High;
+
+    pin_led.set_low();
+    thread::sleep(Duration::from_millis(500));
+    pin_led.set_high();
+    thread::sleep(Duration::from_millis(500));
+    pin_led.set_low();
+    thread::sleep(Duration::from_millis(500));
+    pin_led.set_high();
+
     println!("ready to go");
 
 
