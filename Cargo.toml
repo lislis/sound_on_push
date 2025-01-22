@@ -1,0 +1,8 @@
+[package]
+name = "sound_on_push"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rodio = { git = "https://github.com/RustAudio/rodio.git", branch = "master" }
+rppal = "0.22.1"
