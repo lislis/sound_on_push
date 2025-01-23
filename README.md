@@ -1,8 +1,5 @@
-## Compiling on/ for Raspberry PI
+## sound_on_push
 
-There might be an error when trying to compile rodio. This thread describes the problem and solution: 
-https://github.com/RustAudio/rodio/issues/473
+Small program to read an arcade button and play a sound file if done so.
 
-Tl,dr:
-
-sudo apt-get install libasound2-dev pkg-config
+To be compiled for and run on a Raspberry Pi.
