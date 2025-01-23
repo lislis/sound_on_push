@@ -1,0 +1,10 @@
+[Unit]
+Description=SoundOnPush
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/home/raspi/sound_on_push/script/sound_on_push.sh
+
+[Install]
+WantedBy=multi-user.target
