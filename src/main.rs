@@ -14,7 +14,7 @@ use kira::{
 };
 
 // Gpio uses BCM pin numbering. BCM GPIO 23 is tied to physical pin 16.
-const GPIO_LED: u8 = 23;
+const GPIO_LED: u8 = 16;
 const GPIO_BUTTON: u8 = 12;
 
 fn main() -> Result<(), Box<dyn Error>> {
