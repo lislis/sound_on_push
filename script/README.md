@@ -13,3 +13,7 @@ Modify the permissions
 And run on boot
 
 `sudo systemctl enable sound_on_push.service`
+
+You can also start the system rigt away with:
+
+`sudo systemctl start sound_on_push.service`
