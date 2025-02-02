@@ -21,12 +21,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<String> = env::args().collect();
 
     let filepath = &args[1];
+    let volume: kira::Decibels = args[2].parse::<f32>().unwrap().into();
 
     let mut pin_led = Gpio::new()?.get(GPIO_LED)?.into_output();
     let pin_button = Gpio::new()?.get(GPIO_BUTTON)?.into_input_pullup();
 
     let mut manager = AudioManager::<DefaultBackend>::new(AudioManagerSettings::default())?;
-    let sound_data = StaticSoundData::from_file(&filepath)?.volume(-4.0);
+    let sound_data = StaticSoundData::from_file(&filepath)?.volume(volume);
     let duration = sound_data.duration();
 
     // default is High because input_pullup
@@ -49,8 +50,10 @@ fn main() -> Result<(), Box<dyn Error>> {
       if current_button_state == Level::Low {
          println!("playing");
 
- 	  pin_led.set_low();
+ 	  //pin_led.set_low();
           manager.play(sound_data.clone())?;
+	  thread::sleep(Duration::from_millis(200));
+	  pin_led.set_low();
 	  thread::sleep(duration);
           pin_led.set_high();
 
