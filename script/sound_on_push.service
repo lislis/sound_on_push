@@ -5,6 +5,8 @@ After=multi-user.target
 [Service]
 Type=simple
 ExecStart=/home/raspi/sound_on_push/script/sound_on_push.sh
+# replace with your username
+User=raspi
 
 [Install]
 WantedBy=timers.target
