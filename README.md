@@ -49,3 +49,19 @@ defaults.pcm.card 1
 defaults.ctl.card 1
 ```
 And restart the systemd service
+
+## master volume
+
+Set the pi's master volume.
+(this is pretty loud, just what works for you.)
+
+```
+$ amixer set Master 62000
+
+```
+
+Save mixer settings
+
+```
+$ sudo alsactl store
+```
